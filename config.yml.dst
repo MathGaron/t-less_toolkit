@@ -1,0 +1,5 @@
+dataset_path: path/to/tless
+output_path: path/to/output
+device: primesense | kinect | canon
+image_step: 100
+model_type: cad | reconst
