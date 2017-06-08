@@ -13,7 +13,7 @@ def load_obj_info(path):
     :return: The loaded info.
     """
     with open(path, 'r') as f:
-        info = yaml.load(f, Loader=yaml.CLoader)
+        info = yaml.load(f)
         for eid in info.keys():
             info[eid]['cam_K'] = np.array(info[eid]['cam_K']).reshape((3, 3))
             info[eid]['cam_R_m2c'] = np.array(info[eid]['cam_R_m2c']).reshape((3, 3))
@@ -28,7 +28,7 @@ def load_scene_info(path):
     :return: The loaded info.
     """
     with open(path, 'r') as f:
-        info = yaml.load(f, Loader=yaml.CLoader)
+        info = yaml.load(f)
         for eid in info.keys():
             info[eid]['cam_K'] = np.array(info[eid]['cam_K']).reshape((3, 3))
             info[eid]['cam_R_w2c'] = np.array(info[eid]['cam_R_w2c']).reshape((3, 3))
@@ -43,7 +43,7 @@ def load_scene_gt(path):
     :return: The loaded ground truth poses.
     """
     with open(path, 'r') as f:
-        gts = yaml.load(f, Loader=yaml.CLoader)
+        gts = yaml.load(f)
         for im_id, gts_im in gts.items():
             for gt in gts_im:
                 gt['cam_R_m2c'] = np.array(gt['cam_R_m2c']).reshape((3, 3))
