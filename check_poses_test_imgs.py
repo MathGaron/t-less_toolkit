@@ -84,6 +84,7 @@ def test(ctx):
             rgb_path = rgb_path_mask.format(device, scene_id, im_id, rgb_ext[device])
             rgb = scipy.misc.imread(rgb_path)
 
+
             im_size = (rgb.shape[1], rgb.shape[0])
             vis_rgb = np.zeros(rgb.shape, np.float)
             for gt in gts[im_id]:
@@ -94,6 +95,10 @@ def test(ctx):
 
                 ren_rgb = renderer.render(model, im_size, K, R, t,
                                           surf_color=surf_color, mode='rgb')
+
+                import cv2
+                cv2.imshow("test", ren_rgb)
+                cv2.waitKey()
 
                 # Draw the bounding box of the object
                 ren_rgb = misc.draw_rect(ren_rgb, gt['obj_bb'])
