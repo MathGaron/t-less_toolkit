@@ -199,6 +199,8 @@ class _Canvas(app.Canvas):
         if self.render_depth:
             self.draw_depth() # Render depth image
         app.quit() # Immediately exit the application after the first drawing
+        del self.vertex_buffer
+        del self.index_buffer
 
     def draw_color(self):
         program = gloo.Program(_color_vertex_code, _color_fragment_code)
@@ -222,10 +224,13 @@ class _Canvas(app.Canvas):
             gloo.clear(color=True, depth=True)
             gloo.set_viewport(0, 0, *self.size)
             program.draw('triangles', self.index_buffer)
-
             # Retrieve the contents of the FBO texture
             self.rgb = gloo.read_pixels((0, 0, self.size[0], self.size[1]))[:, :, :3]
             self.rgb = np.copy(self.rgb)
+
+        fbo.delete()
+        render_tex.delete()
+        program.delete()
 
     def draw_depth(self):
         program = gloo.Program(_depth_vertex_code, _depth_fragment_code)
@@ -251,6 +256,9 @@ class _Canvas(app.Canvas):
             # Retrieve the contents of the FBO texture
             self.depth = self.read_fbo_color_rgba32f(fbo)
             self.depth = self.depth[:, :, 0] # Depth is saved in the first channel
+        fbo.delete()
+        render_tex.delete()
+        program.delete()
 
     @staticmethod
     def read_fbo_color_rgba32f(fbo):
