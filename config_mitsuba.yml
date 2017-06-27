@@ -1,0 +1,5 @@
+dataset_path: /media/ssd/mitsuba
+device: mitsuba
+output_path: ./Test_Results
+image_step: 1
+model_type: cad

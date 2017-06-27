@@ -1,9 +1,12 @@
 # Author: Tomas Hodan (hodantom@cmp.felk.cvut.cz)
 # Center for Machine Perception, Czech Technical University in Prague
+import os
 
 import numpy as np
 import struct
 import yaml
+from PIL import Image
+
 
 def load_obj_info(path):
     """
@@ -20,6 +23,7 @@ def load_obj_info(path):
             info[eid]['cam_t_m2c'] = np.array(info[eid]['cam_t_m2c']).reshape((3, 1))
     return info
 
+
 def load_scene_info(path):
     """
     Loads info about test images from a YAML file.
@@ -34,6 +38,7 @@ def load_scene_info(path):
             info[eid]['cam_R_w2c'] = np.array(info[eid]['cam_R_w2c']).reshape((3, 3))
             info[eid]['cam_t_w2c'] = np.array(info[eid]['cam_t_w2c']).reshape((3, 1))
     return info
+
 
 def load_scene_gt(path):
     """
@@ -50,6 +55,7 @@ def load_scene_gt(path):
                 gt['cam_t_m2c'] = np.array(gt['cam_t_m2c']).reshape((3, 1))
     return gts
 
+
 def load_colors(path):
     """
     Loads colors from a txt file - each line contains space-separated R, G and B
@@ -62,6 +68,15 @@ def load_colors(path):
         lines = f.read().splitlines()
         colors = [list(map(float, l.split(' '))) for l in lines]
         return colors
+
+
+def load_images(path, id):
+    rgb_path = os.path.join(path, "rgb", "{:04}.png".format(id))
+    depth_path = os.path.join(path, "depth", "{:04}.png".format(id))
+    rgb = np.array(Image.open(rgb_path))
+    depth = np.array(Image.open(depth_path)).astype(np.uint16)
+    return rgb, depth
+
 
 def load_ply(path):
     """
@@ -76,7 +91,7 @@ def load_ply(path):
 
     n_pts = 0
     n_faces = 0
-    face_n_corners = 3 # Only triangular faces are supported
+    face_n_corners = 3  # Only triangular faces are supported
     pt_props = []
     face_props = []
     is_binary = False
@@ -85,7 +100,7 @@ def load_ply(path):
 
     # Read header
     while True:
-        line = f.readline().rstrip('\n').rstrip('\r') # Strip the newline character(s)
+        line = f.readline().rstrip('\n').rstrip('\r')  # Strip the newline character(s)
         if line.startswith('element vertex'):
             n_pts = int(line.split(' ')[-1])
             header_vertex_section = True
@@ -94,7 +109,7 @@ def load_ply(path):
             n_faces = int(line.split(' ')[-1])
             header_vertex_section = False
             header_face_section = True
-        elif line.startswith('element'): # Some other element
+        elif line.startswith('element'):  # Some other element
             header_vertex_section = False
             header_face_section = False
         elif line.startswith('property') and header_vertex_section:
@@ -129,7 +144,7 @@ def load_ply(path):
         is_color = True
         model['colors'] = np.zeros((n_pts, 3), np.float)
 
-    formats = { # For binary format
+    formats = {  # For binary format
         'float': ('f', 4),
         'double': ('d', 8),
         'int': ('i', 4),

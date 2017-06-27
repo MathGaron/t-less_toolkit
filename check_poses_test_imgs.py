@@ -29,7 +29,6 @@ def main(ctx, config):
 @click.pass_context
 def test(ctx):
     config = ctx.obj['config']
-    scene_ids = range(1, 21)
     device = config['device']
     model_type = config['model_type']
     im_step = int(config['image_step'])
@@ -42,10 +41,12 @@ def test(ctx):
     scene_gt_path_mask = os.path.join(data_path, 'test_{}', '{:02d}', 'gt.yml')
     rgb_path_mask = os.path.join(data_path, 'test_{}', '{:02d}', 'rgb', '{:04d}.{}')
     depth_path_mask = os.path.join(data_path, 'test_{}', '{:02d}', 'depth', '{:04d}.png')
-    rgb_ext = {'primesense': 'png', 'kinect': 'png', 'canon': 'jpg'}
+    rgb_ext = {'mitsuba': 'png', 'primesense': 'png', 'kinect': 'png', 'canon': 'jpg'}
     obj_colors_path = os.path.join('data', 'obj_rgb.txt')
     vis_rgb_path_mask = os.path.join(output_dir, '{:02d}_{}_{}_{:04d}_rgb.png')
     vis_depth_path_mask = os.path.join(output_dir, '{:02d}_{}_{}_{:04d}_depth_diff.png')
+
+    scene_ids = [int(x) for x in os.listdir(os.path.join(data_path, "test_{}".format(device)))]
 
     misc.ensure_dir(output_dir)
     obj_colors = inout.load_colors(obj_colors_path)
@@ -96,12 +97,12 @@ def test(ctx):
                 ren_rgb = renderer.render(model, im_size, K, R, t,
                                           surf_color=surf_color, mode='rgb')
 
-                import cv2
-                cv2.imshow("test", ren_rgb)
-                cv2.waitKey()
-
                 # Draw the bounding box of the object
                 ren_rgb = misc.draw_rect(ren_rgb, gt['obj_bb'])
+
+                #import cv2
+                #cv2.imshow("test", ren_rgb)
+                #cv2.waitKey()
 
                 vis_rgb += 0.7 * ren_rgb.astype(np.float)
 
